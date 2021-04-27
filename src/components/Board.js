@@ -13,16 +13,18 @@ export default function Board( { turn, setTurn, clicked, setClicked, value, setV
         setValue(arr);
 
         winner = checkWinner(arr);
+        setGameOver( winner );
+
+        if(clickArr.every( click => click )) {
+            winner = true;
+
+            return
+        }
 
         if(winner) {
             clickArr = new Array(clickArr.length).fill(true);
         }
 
-        if(clickArr.every( click => click )) {
-            winner = true;
-        }
-
-        setGameOver( winner );
         setClicked(clickArr);
     }
 
