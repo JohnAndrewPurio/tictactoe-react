@@ -2,26 +2,72 @@ import Board from "./components/Board";
 import Header from "./components/Header";
 import { useState } from 'react';
 import Reset from "./components/Reset";
+import History from "./components/History";
 
 export default function App() {
     const [turn, setTurn] = useState(() => false);
     const [clicked, setClicked] = useState(() => Array(9).fill(false) );
     const [value, setValue] = useState(() => Array(9).fill(null) );
     const [gameOver, setGameOver] = useState( () => checkWinner(value) );
+    const [history, setHistory] = useState( () => null );
+    const [restored, setRestored] = useState( () => false );
+
     const resetGame = () => {
         setTurn(false);
         setClicked(Array(9).fill(false));
         setValue(Array(9).fill(null));
         setGameOver(false);
+        setHistory(null);
+    }
+
+    const cellClicked = (index) => {
+        let arr = value.slice();
+        let historyCopy = history ? history.slice(): [];
+        let clickArr = clicked.slice();
+        let winner;
+        let current = [turn, gameOver, value, [...clicked]];
+
+        if(restored !== false) {
+            historyCopy = historyCopy.slice(0, restored);
+
+            console.log(historyCopy, restored);
+        }
+
+        historyCopy.push(current.slice());
+
+        setHistory(historyCopy);
+
+        arr[index] = turn === false ? 'O': 'X';
+        clickArr[index] = true;
+
+        setTurn(!turn);
+        setValue(arr);
+
+        winner = clickArr.every( click => click ) ? true: checkWinner(arr);
+        setGameOver( winner );
+
+        if(winner) {
+            clickArr = new Array(clickArr.length).fill(true);
+        }
+
+        setClicked(clickArr);
+        setRestored(false);
+    }
+
+    const returnToPreviousState = ([prevTurn, prevGameState, prevVal, prevClicks], index) => {
+        setTurn(prevTurn);
+        setGameOver(prevGameState);
+        setValue(prevVal);
+        setClicked(prevClicks);
+        setRestored(index);
     }
 
     return (
         <div className="container">
             <Header turn={turn} gameOver={ gameOver }/>
-            <Board turn={turn} setTurn={setTurn} clicked={clicked} 
-                    setClicked={setClicked} value={ value } setValue={setValue} 
-                    setGameOver={ setGameOver } checkWinner ={ checkWinner } />
+            <Board value={value} cellClicked={cellClicked} clicked={clicked} />
             <Reset resetGame={resetGame} />
+            <History history={history} returnToPreviousState={returnToPreviousState} />
         </div>
     )
 }

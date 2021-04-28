@@ -1,33 +1,6 @@
 import Cells from "./Cells";
 
-export default function Board( { turn, setTurn, clicked, setClicked, value, setValue, setGameOver, checkWinner } ) {
-    const cellClicked = (index) => {
-        let arr = value.slice();
-        let clickArr = clicked.slice();
-        let winner;
-
-        arr[index] = turn === false ? 'O': 'X';
-        clickArr[index] = true;
-
-        setTurn(!turn);
-        setValue(arr);
-
-        winner = checkWinner(arr);
-        setGameOver( winner );
-
-        if(clickArr.every( click => click )) {
-            winner = true;
-
-            return
-        }
-
-        if(winner) {
-            clickArr = new Array(clickArr.length).fill(true);
-        }
-
-        setClicked(clickArr);
-    }
-
+export default function Board( { value, cellClicked, clicked } ) {
     return (
         <div className="board">
             <Cells value={ value } index = '0' click={cellClicked} disabled={clicked} />

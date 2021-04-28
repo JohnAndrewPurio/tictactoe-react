@@ -1,7 +1,5 @@
 
 export default function Header( {turn, gameOver} ) {
-    console.log(gameOver);
-
     return (
         <div className="header">
             <h2>Tic-Tac-Toe</h2>
